@@ -19,7 +19,21 @@ keywords = [
     "nse-cli",
     "qunatitative-finance",
     "indian-stock-market",
-    "national-stock-exchange"
+    "national-stock-exchange",
+    "nifty",
+    "zerodha",
+    "banknifty",
+    "trading-bot",
+    "trading-algorithms",
+    "quantitative",
+    "stock-data",
+    "algorithmic-trading",
+    "quantitative-trading",
+    "options-trading",
+    "trading-platforms",
+    "stocks-prices",
+    "stocks-analysis",
+    "qunatitative-finance"
 ]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
