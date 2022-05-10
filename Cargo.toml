@@ -51,9 +51,9 @@ rand = { version = "0.8.5", features = ["nightly", "serde", "serde1", "small_rng
 # isahc = "1.7.0"
 
 [dependencies.isahc]
-# version = "1.7.1"
-git = "https://github.com/sagebind/isahc.git"
-branch = "master"
+version = "1.7.1"
+# git = "https://github.com/sagebind/isahc.git"
+# branch = "master"
 features = [
     "nightly",
     "psl",
@@ -64,6 +64,6 @@ features = [
     "static-curl",
     "text-decoding",
     "unstable-interceptors",
-    "rustls-tls",
-    "rustls-tls-native-certs",
+    # "rustls-tls",
+    # "rustls-tls-native-certs",
 ]
