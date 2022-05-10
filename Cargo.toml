@@ -55,7 +55,7 @@ version = "1.7.1"
 # git = "https://github.com/sagebind/isahc.git"
 # branch = "master"
 features = [
-    "nightly",
+    # "nightly",
     "psl",
     "cookies",
     "http2",
@@ -63,7 +63,7 @@ features = [
     "spnego",
     "static-curl",
     "text-decoding",
-    "unstable-interceptors",
+    # "unstable-interceptors",
     # "rustls-tls",
     # "rustls-tls-native-certs",
 ]
