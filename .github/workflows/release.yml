@@ -106,7 +106,7 @@ jobs:
           components: rustfmt, clippy
       # - uses: Swatinem/rust-cache@v1
       - name: Install dependencies
-        run: sudo apt-get install -y gcc libgssapi-krb5-2 libkrb5-dev libsasl2-modules-gssapi-mit gcc-mingw-w64-x86-64 librust-gdk-dev
+        run: sudo apt-get install -y gcc libgssapi-krb5-2 libkrb5-dev libsasl2-modules-gssapi-mit gcc-mingw-w64-x86-64
       - name: Upload to Crates
         uses: actions-rs/cargo@v1
         with:
