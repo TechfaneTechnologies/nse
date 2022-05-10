@@ -5,7 +5,7 @@ use chrono::{NaiveDate, NaiveDateTime};
 // use csv::Trim;
 use isahc::{
     config::{DnsCache, RedirectPolicy, VersionNegotiation},
-    cookies::{CookieJar},
+    cookies::CookieJar,
     prelude::*,
     HttpClient, // Request,
 };

@@ -47,12 +47,15 @@ chrono = { version = "0.4.19", features = ["serde"] }
 serde_urlencoded = "0.7.1"
 serde_json = { version = "1.0.79", features = ["raw_value"] }
 rayon = "1.5.2"
-rand = { version = "0.8.5", features = ["nightly", "packed_simd", "simd_support", "serde", "serde1", "small_rng", "log", "min_const_gen"] }
+rand = { version = "0.8.5", features = ["nightly", "serde", "serde1", "small_rng", "log", "min_const_gen"] }
 # isahc = "1.7.0"
 
 [dependencies.isahc]
-version = "1.7.1"
+# version = "1.7.1"\
+git = "https://github.com/sagebind/isahc.git"
+branch = "master"
 features = [
+    "nightly",
     "psl",
     "cookies",
     "http2",
@@ -61,4 +64,6 @@ features = [
     "static-curl",
     "text-decoding",
     "unstable-interceptors",
+    "rustls-tls",
+    "rustls-tls-native-certs",
 ]
