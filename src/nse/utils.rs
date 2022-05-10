@@ -1,5 +1,5 @@
+#![allow(dead_code)]
 use chrono::Datelike;
-#[allow(dead_code)]
 use chrono::{NaiveDate, NaiveDateTime};
 use csv::ReaderBuilder;
 use csv::Trim;
@@ -115,7 +115,7 @@ struct NetworkData {
     ct0: &'static str,
     ct1: &'static str,
     ctcount: u8,
-    time: usize,
+    time: i64,
 }
 
 pub fn run() -> Result<String, Box<dyn std::error::Error>> {
@@ -143,7 +143,7 @@ pub fn run() -> Result<String, Box<dyn std::error::Error>> {
         ct0: "g1|1|1",
         ct1: "g2|2|1",
         ctcount: 2,
-        time: chrono::Local::now().naive_local().timestamp_millis() as usize,
+        time: chrono::Local::now().naive_local().timestamp_millis(),
     };
     let data = serde_urlencoded::to_string(&data).expect("serialize issue");
     println!("{}", data);
@@ -176,8 +176,8 @@ pub fn run() -> Result<String, Box<dyn std::error::Error>> {
     // println!("{}", response.text()?);
     let response_text = response.text()?;
     let response_text = response_text
-        .replace("|", ",")
-        .replace("~", "\n")
+        .replace('|', ",")
+        .replace('~', "\n")
         .replace("date", "Date")
         .replace("g1_o", "Open")
         .replace("g1_h", "High")
@@ -231,7 +231,7 @@ pub fn get_index_js() -> Result<String, Box<dyn std::error::Error>> {
     Ok(response_text)
 }
 
-pub fn get_indices_ohlcv_data_parallel(indices_vec: Vec<&str>) -> Result<(), isahc::Error> {
+pub fn get_indices_ohlcv_data_parallel(indices_vec: &[&str]) -> Result<(), isahc::Error> {
     // let client = HttpClient::new()?;
     let client = HttpClient::builder()
         .default_header("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.100.1185.50 Safari/537.36 Edg/99.100.1185.50")
@@ -253,7 +253,7 @@ pub fn get_indices_ohlcv_data_parallel(indices_vec: Vec<&str>) -> Result<(), isa
             let start = Instant::now();
             let data = NetworkData {
                 instrument: "FUTSTK",
-                cdsymbol: indices.to_string(),
+                cdsymbol: (*indices).to_string(),
                 segment: "OI",
                 series: "EQ",
                 cdexpirymonth: 1,
@@ -273,7 +273,7 @@ pub fn get_indices_ohlcv_data_parallel(indices_vec: Vec<&str>) -> Result<(), isa
                 ct0: "g1|1|1",
                 ct1: "g2|2|1",
                 ctcount: 2,
-                time: chrono::Local::now().naive_local().timestamp_millis() as usize,
+                time: chrono::Local::now().naive_local().timestamp_millis(),
             };
             let data = serde_urlencoded::to_string(&data).expect("serialize issue");
             // println!("{}", data);
@@ -292,8 +292,8 @@ pub fn get_indices_ohlcv_data_parallel(indices_vec: Vec<&str>) -> Result<(), isa
                 end.duration_since(start)
             );
             let response_text = response_text
-                .replace("|", ",")
-                .replace("~", "\n")
+                .replace('|', ",")
+                .replace('~', "\n")
                 .replace("date", "Date")
                 .replace("g1_o", "Open")
                 .replace("g1_h", "High")
@@ -356,7 +356,7 @@ pub fn get_indices_ohlcv_data_serial(
             ct0: "g1|1|1",
             ct1: "g2|2|1",
             ctcount: 2,
-            time: chrono::Local::now().naive_local().timestamp_millis() as usize,
+            time: chrono::Local::now().naive_local().timestamp_millis(),
         };
         let data = serde_urlencoded::to_string(&data).expect("serialize issue");
         // println!("{}", data);
@@ -375,8 +375,8 @@ pub fn get_indices_ohlcv_data_serial(
         // println!("{}", response.text()?);
         let response_text = response.text()?;
         let response_text = response_text
-            .replace("|", ",")
-            .replace("~", "\n")
+            .replace('|', ",")
+            .replace('~', "\n")
             .replace("date", "Date")
             .replace("g1_o", "Open")
             .replace("g1_h", "High")
@@ -397,13 +397,13 @@ pub fn get_indices_ohlcv_data() -> Result<(), Box<dyn std::error::Error>> {
     let indices_js_data = get_index_js().unwrap();
     let raw_indices_data = indices_js_data.as_str();
     println!("{}", raw_indices_data);
-    let raw_indices_data = &*raw_indices_data.split("\n").collect::<Vec<&str>>();
+    let raw_indices_data = &*raw_indices_data.split('\n').collect::<Vec<&str>>();
     let indices = raw_indices_data[1]
         .split("var indices\t\t =")
         .collect::<Vec<&str>>()
         .last()
         .unwrap()
-        .split(";")
+        .split(';')
         .collect::<Vec<&str>>();
     let intra_indices = raw_indices_data
         .last()
@@ -412,30 +412,30 @@ pub fn get_indices_ohlcv_data() -> Result<(), Box<dyn std::error::Error>> {
         .collect::<Vec<&str>>()
         .last()
         .unwrap()
-        .split(";")
+        .split(';')
         .collect::<Vec<&str>>();
     // println!("{:#?}", indices);
     // let indices = *indices.first().unwrap();
     let indices = indices
         .first()
         .unwrap()
-        .replace("'", "")
-        .replace("[", "")
-        .replace("]", "");
+        .replace('\'', "")
+        .replace('[', "")
+        .replace(']', "");
     let indices = indices.as_str();
     // let intra_indices = *intra_indices.first().unwrap();
     let intra_indices = intra_indices
         .first()
         .unwrap()
-        .replace("'", "")
-        .replace("[", "")
-        .replace("]", "");
+        .replace('\'', "")
+        .replace('[', "")
+        .replace(']', "");
     let intra_indices = intra_indices.as_str();
-    let indices_vec = indices.split(",").collect::<Vec<&str>>();
-    let intra_indices_vec = intra_indices.split(",").collect::<Vec<&str>>();
+    let indices_vec = indices.split(',').collect::<Vec<&str>>();
+    let intra_indices_vec = intra_indices.split(',').collect::<Vec<&str>>();
     println!("{:#?}", indices_vec);
     println!("{:#?}", intra_indices_vec);
-    get_indices_ohlcv_data_parallel(indices_vec)?;
+    get_indices_ohlcv_data_parallel(&indices_vec)?;
     // get_indices_ohlcv_data_serial(indices_vec)?;
     // get_indices_ohlcv_data(intra_indices_vec)?;
     Ok(())

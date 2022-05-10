@@ -1,11 +1,11 @@
 use chrono::Datelike;
-#[allow(dead_code)]
+// #[allow(dead_code)]
 use chrono::{NaiveDate, NaiveDateTime};
 // use csv::ReaderBuilder;
 // use csv::Trim;
 use isahc::{
     config::{DnsCache, RedirectPolicy, VersionNegotiation},
-    cookies::{Cookie, CookieJar},
+    cookies::{CookieJar},
     prelude::*,
     HttpClient, // Request,
 };
@@ -96,7 +96,7 @@ pub struct NetworkData {
     ct0: &'static str,
     ct1: &'static str,
     ctcount: u8,
-    time: usize,
+    time: i64,
 }
 
 pub struct FetchNse {
@@ -108,7 +108,7 @@ pub struct FetchNse {
     pub backoff_time: [Duration; 11],
 }
 
-const NSE_URL: &'static str = "https://www.nseindia.com";
+const NSE_URL: &str = "https://www.nseindia.com";
 
 impl Default for FetchNse {
     fn default() -> Self {
@@ -159,7 +159,7 @@ impl FetchNse {
         if !self.home_folder_path.exists() && !self.home_folder_path.is_dir() {
             // self.create_dir_if_not_exists(&self.home_folder_path.to_str().unwrap());
             self.create_dir_if_not_exists(
-                &self
+                self
                     .home_folder_path
                     .join("1-Minute-OHLCV-Data")
                     .to_str()
@@ -168,7 +168,7 @@ impl FetchNse {
         }
         for dir in &ohlcv_dirs {
             self.create_dir_if_not_exists(
-                &self
+                self
                     .home_folder_path
                     .join("1-Minute-OHLCV-Data")
                     .join(dir)
@@ -180,7 +180,7 @@ impl FetchNse {
         for dir in &expiry_dirs {
             for folders in &custom_folders {
                 self.create_dir_if_not_exists(
-                    &self
+                    self
                         .home_folder_path
                         .join(dir)
                         .join(folders)
@@ -259,22 +259,21 @@ impl FetchNse {
                 self.fetch_nse_home_page()?;
                 thread::sleep(self.backoff_time[retries]);
                 continue;
-            } else {
-                println!(
-                    "╭─ Failed \n╰─{}: With Status {} and {} no of retries",
-                    &uri,
-                    response.status(),
-                    retry_no
-                );
-                break;
             }
+            println!(
+                "╭─ Failed \n╰─{}: With Status {} and {} no of retries",
+                &uri,
+                response.status(),
+                retry_no
+            );
+            break;
         }
         Ok(response_texts)
     }
     pub fn post_nse(
         &self,
         uri: &str,
-        data: NetworkData,
+        data: &NetworkData,
         print_response_text: bool,
     ) -> Result<String, isahc::Error> {
         let start = Instant::now();
@@ -313,7 +312,7 @@ impl FetchNse {
             .join(format!(
                 "{}_{}.json",
                 filename,
-                chrono::Local::now().format("%d-%m-%Y_%H-%M-%S").to_string()
+                chrono::Local::now().format("%d-%m-%Y_%H-%M-%S")
             ));
         // println!("{}", &files_path.to_str().unwrap());
         let mut file = File::create(files_path.to_str().unwrap())?;
@@ -323,7 +322,7 @@ impl FetchNse {
 
     pub fn fetch_nse_parallel(
         &self,
-        urls_vec: Vec<[&str; 2]>,
+        urls_vec: &[[&str; 2]],
         print_response_text: bool,
     ) -> Result<(), isahc::Error> {
         self.fetch_nse_home_page()?;
@@ -346,7 +345,7 @@ impl FetchNse {
     }
     pub fn get_indices_ohlcv_data_parallel(
         &self,
-        indices_vec: Vec<&str>,
+        indices_vec: &[&str],
     ) -> Result<(), isahc::Error> {
         let start = Instant::now();
         indices_vec
@@ -354,7 +353,7 @@ impl FetchNse {
             .try_for_each(|indices| {
                 let data = NetworkData {
                     instrument: "FUTSTK",
-                    cdsymbol: indices.to_string(),
+                    cdsymbol: (*indices).to_string(),
                     segment: "OI",
                     series: "EQ",
                     cdexpirymonth: 1,
@@ -376,7 +375,7 @@ impl FetchNse {
                     ct0: "g1|1|1",
                     ct1: "g2|2|1",
                     ctcount: 2,
-                    time: chrono::Local::now().naive_local().timestamp_millis() as usize,
+                    time: chrono::Local::now().naive_local().timestamp_millis(),
                 };
                 let response_text = self.post_nse(
                     format!(
@@ -384,12 +383,12 @@ impl FetchNse {
                         self.nse_url
                     )
                     .as_str(),
-                    data,
+                    &data,
                     false,
                 )?;
                 let response_text = response_text
-                    .replace("|", ",")
-                    .replace("~", "\n")
+                    .replace('|', ",")
+                    .replace('~', "\n")
                     .replace("date", "Date")
                     .replace("g1_o", "Open")
                     .replace("g1_h", "High")
@@ -450,16 +449,16 @@ impl FetchNse {
                 ct0: "g1|1|1",
                 ct1: "g2|2|1",
                 ctcount: 2,
-                time: chrono::Local::now().naive_local().timestamp_millis() as usize,
+                time: chrono::Local::now().naive_local().timestamp_millis(),
             };
             let response_text = self.post_nse(
                 "https://www.nseindia.com/ChartApp/install/charts/data/GetHistoricalNew.jsp",
-                data,
+                &data,
                 false,
             )?;
             let response_text = response_text
-                .replace("|", ",")
-                .replace("~", "\n")
+                .replace('|', ",")
+                .replace('~', "\n")
                 .replace("date", "Date")
                 .replace("g1_o", "Open")
                 .replace("g1_h", "High")
@@ -499,14 +498,14 @@ impl FetchNse {
             .unwrap();
         let raw_indices_data = indices_js_data.as_str();
         // println!("{:#?}", raw_indices_data);
-        let raw_indices_data = &*raw_indices_data.split("\n").collect::<Vec<&str>>();
+        let raw_indices_data = &*raw_indices_data.split('\n').collect::<Vec<&str>>();
         // println!("Raw Indices ==> \n{:#?}", raw_indices_data);
         let indices = raw_indices_data[1]
             .split("var indices\t\t =")
             .collect::<Vec<&str>>()
             .last()
             .unwrap()
-            .split(";")
+            .split(';')
             .collect::<Vec<&str>>();
         let intra_indices = raw_indices_data
             .last()
@@ -515,33 +514,33 @@ impl FetchNse {
             .collect::<Vec<&str>>()
             .last()
             .unwrap()
-            .split(";")
+            .split(';')
             .collect::<Vec<&str>>();
         // println!("{:#?}", indices);
         // let indices = *indices.first().unwrap();
         let indices = indices
             .first()
             .unwrap()
-            .replace("'", "")
-            .replace("[", "")
-            .replace("]", "");
+            .replace('\'', "")
+            .replace('[', "")
+            .replace(']', "");
         let indices = indices.as_str();
         // let intra_indices = *intra_indices.first().unwrap();
         let intra_indices = intra_indices
             .first()
             .unwrap()
-            .replace("'", "")
-            .replace("[", "")
-            .replace("]", "");
+            .replace('\'', "")
+            .replace('[', "")
+            .replace(']', "");
         let intra_indices = intra_indices.as_str();
-        let indices_vec = indices.split(",").collect::<Vec<&str>>();
-        let intra_indices_vec = intra_indices.split(",").collect::<Vec<&str>>();
+        let indices_vec = indices.split(',').collect::<Vec<&str>>();
+        let intra_indices_vec = intra_indices.split(',').collect::<Vec<&str>>();
         println!("{:#?}", &indices_vec);
         println!("{:#?}", &intra_indices_vec);
         if serial {
             self.get_indices_ohlcv_data_serial(indices_vec)?;
         } else if parallel {
-            self.get_indices_ohlcv_data_parallel(indices_vec)?;
+            self.get_indices_ohlcv_data_parallel(&indices_vec)?;
         }
         Ok(())
     }

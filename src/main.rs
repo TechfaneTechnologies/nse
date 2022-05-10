@@ -27,6 +27,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                 ["BANKNIFTY_INDEX","https://www.nseindia.com/api/chart-databyindex?index=NIFTY%20BANK&indices=true"],
                                 ["FINNIFTY_INDEX_PreMarket","https://www.nseindia.com/api/chart-databyindex?index=NIFTY%20FINANCIAL%20SERVICES&indices=true&preopen=true"],
                                 ["FINNIFTY_INDEX","https://www.nseindia.com/api/chart-databyindex?index=NIFTY%20FINANCIAL%20SERVICES&indices=true"]];
-    nse_client.fetch_nse_parallel(urls.to_vec(), false)?;
+    nse_client.fetch_nse_parallel(urls.as_ref(), false)?;
     Ok(())
 }
