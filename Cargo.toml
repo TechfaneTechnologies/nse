@@ -51,7 +51,7 @@ rand = { version = "0.8.5", features = ["nightly", "serde", "serde1", "small_rng
 # isahc = "1.7.0"
 
 [dependencies.isahc]
-# version = "1.7.1"\
+# version = "1.7.1"
 git = "https://github.com/sagebind/isahc.git"
 branch = "master"
 features = [
