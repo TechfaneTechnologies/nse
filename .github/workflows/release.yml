@@ -23,11 +23,11 @@
 
 name: Build and Release
 
-# on:
-#   push:
-#     branches: [ main ]
-#   pull_request:
-#     branches: [ main ]
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
@@ -40,24 +40,27 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: extractions/setup-just@v1
-
+      - uses: Swatinem/rust-cache@v1
       - name: Install Rust for macOS
         if: matrix.os == 'macos-latest'
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
           target: aarch64-apple-darwin
+      - uses: Swatinem/rust-cache@v1
       - name: Install Rust for Windows
         if: matrix.os == 'windows-latest'
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
+      - uses: Swatinem/rust-cache@v1
       - name: Install Rust for Linux
         if: matrix.os == 'ubuntu-latest'
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
           target: x86_64-pc-windows-gnu
+      - uses: Swatinem/rust-cache@v1
 
       - name: Install Linux dependencies
         if: matrix.os == 'ubuntu-latest'
@@ -65,21 +68,28 @@ jobs:
 
       - name: Lint code
         run: just lint
+      
+      - uses: Swatinem/rust-cache@v1
 
       - name: Run tests
         uses: actions-rs/cargo@v1
         with:
           command: test
+      
+      - uses: Swatinem/rust-cache@v1
 
       - name: Build macOS
         if: matrix.os == 'macos-latest'
         run: just build-mac
+      - uses: Swatinem/rust-cache@v1
       - name: Build Windows
         if: matrix.os == 'windows-latest'
         run: just build-win
+      - uses: Swatinem/rust-cache@v1
       - name: Build Linux
         if: matrix.os == 'ubuntu-latest'
         run: just build-linux
+      - uses: Swatinem/rust-cache@v1
 
       - name: Upload build artefacts
         uses: actions/upload-artifact@v3
@@ -87,28 +97,33 @@ jobs:
           name: binaries
           path: out/nse*.zip
           if-no-files-found: error
+      - uses: Swatinem/rust-cache@v1
   
   publish:
     runs-on: ubuntu-latest
     needs: build
     steps:
       - uses: actions/checkout@v3
+      - uses: Swatinem/rust-cache@v1
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable
+          toolchain: nightly
+      - uses: Swatinem/rust-cache@v1
       - name: Install dependencies
         run: sudo apt-get install librust-gdk-dev
       - name: Upload to Crates
         uses: actions-rs/cargo@v1
         with:
           command: publish
+      - uses: Swatinem/rust-cache@v1
 
   release:
     runs-on: ubuntu-latest
     needs: build
     steps:
       - uses: actions/checkout@v3
+      - uses: Swatinem/rust-cache@v1
       - name: Download artefacts
         uses: actions/download-artifact@v3
         with:
@@ -119,6 +134,7 @@ jobs:
       # Remove the dots for the markdown header
       - name: MD Header
         run: echo "MD_HEADER=$(echo ${{ github.ref_name }} | sed 's/\.//g')" >> $GITHUB_ENV
+      - uses: Swatinem/rust-cache@v1
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
@@ -136,3 +152,4 @@ jobs:
             - MSVC Windows (x64 windows msvc)
 
             You can install these by downloading and unzipping the appropriate asset, and moving the executable to ~/bin or any other binary folder in your path.
+      - uses: Swatinem/rust-cache@v1
