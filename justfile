@@ -21,6 +21,7 @@ build-win:
 build-linux:
     rm -f out/nse-linux-gnu.zip out/nse-windows-gnu.zip
     mkdir -p out
+    rustup target add x86_64-pc-windows-gnu
     cargo build --target=x86_64-pc-windows-gnu --release
     cargo build --target=x86_64-unknown-linux-gnu --release
     zip -r out/nse-linux-gnu.zip -j target/x86_64-unknown-linux-gnu/release/nse
