@@ -28,7 +28,7 @@ Remember to use an add-on like [cargo-update](https://crates.io/crates/cargo-upd
 
 ### GitHub Releases
 
-1. Download the asset suitable for your operating system from [the latest release](https://github.com/theRookieCoder/nse/releases/latest)
+1. Download the asset suitable for your operating system from [the latest release](https://github.com/TechfaneTechnologies/nse/releases/latest)
 2. Unzip the file and move it to a folder in your path such as `~/bin`
 3. Remember to check the releases page for any updates!
 
