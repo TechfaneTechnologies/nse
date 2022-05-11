@@ -1,6 +1,6 @@
 [package]
 name = "nse"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = ["TechfaneTechnologies <techfanetechnologies@gmail.com>"]
 description = "NSE is a rust binary and library for extracting real-time data from National Stock Exchange (India)"
