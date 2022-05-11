@@ -1,9 +1,19 @@
 # Changelog for Ferium
 
-## `v0.1.0`
+## `v0.1.2`
 ### 11.05.2022
 
-- Update to nse 0.0.9
+- Updated to nse 0.1.2
+
+### Changed
+
+- Fixed Isahc version to 1.7.1 instead of git master branch due to failing curl-sys build
+- Commented code better
+
+## `v0.1.1`
+### 10.05.2022
+
+- Updatd to nse 0.1.1
 - Improved upgrade code to be faster and more clean
 - Immediately fail if rate limit error occured
 - Show the http requests response status alongwith timetaken and no of retries it took while completing the request.
@@ -22,3 +32,5 @@
 - Moved util.rs to `nse` mod folder
 - Made all panics into `println!`s and exits (with descriptive error codes)
 - Commented code better
+
+
