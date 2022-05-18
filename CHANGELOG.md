@@ -1,4 +1,4 @@
-# Changelog for Ferium
+# Changelog for NSE
 
 ## `v0.1.2`
 ### 11.05.2022
